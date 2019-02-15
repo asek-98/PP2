@@ -16,15 +16,16 @@ namespace task2
         {
             name = n;
             id = i;
+    
+ 
         }
         public void data() // метод который выводит данные студента
         {
-            Console.WriteLine("Name of student: " + name + "\n" + "ID of student: " + id);
+            Console.WriteLine("Name of student: " + name + "\n" + yearofStudy + " ");
         }
-        public int NextYear(int y) // метод который изменяет курс обучение студента на +1 
+        public void NextYear() // метод который изменяет курс обучение студента на +1 
         {
-            yearofStudy = y;
-            return yearofStudy + 1;
+            yearofStudy = yearofStudy + 1;
         }
     }
 }

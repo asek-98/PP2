@@ -27,10 +27,18 @@ namespace task2
                 num = Console.ReadLine();
             }
             sYear = int.Parse(num);
+
+
+
+
+
+
             Class1 s = new Class1(sName, sId); // конструктор 
             s.data();
-            Console.WriteLine("Next Year of study: " + s.NextYear(sYear));
-            Console.ReadKey();
+
+            s.NextYear();
+            s.data();            Console.ReadKey();
+
         }
     }
 }

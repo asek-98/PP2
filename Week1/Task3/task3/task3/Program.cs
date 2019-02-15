@@ -17,14 +17,25 @@ namespace task3
             for (int i = 0; i < n; i++) // input numbers into array 
             {
                 int b = int.Parse(Console.ReadLine());
+
                 a[i] = b;
             }
+            int k = 0;
+            int[] a1 = new int[2 * n];
+
             for (int i = 0; i < n; i++) // output every number two times 
             {
-                Console.Write(a[i] +" ");
-                Console.Write(a[i]+" ");
+                
+                a1[k] = a[i];
+                k++;
+                a1[k] = a[i];
+                k++;
+                
                 
             }
+            for (int j = 0; j < 2 * n; j++)
+                Console.WriteLine(a1[j] + " ");
+            Console.ReadKey();
         }
     }
 }

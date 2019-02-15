@@ -11,7 +11,7 @@ namespace palindrom
         static void Main(string[] args)
         {
             string s, r = ""; // declare string 
-          
+
             s = Console.ReadLine(); // reads string we enter
             for (int i = s.Length - 1; i >= 0; i--) //string reverse
             {

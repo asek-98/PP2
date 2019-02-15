@@ -9,136 +9,117 @@ namespace Task1
 {
     class FarManager
     {
-        public int cursor;
-        public string path;
-        public int sz;
-        public bool ok;
-
-        DirectoryInfo directory = null;
-        FileSystemInfo currentFs = null;
-
-        public FarManager()
+        int cursor; //создаем курсор
+        int number; //создаем количество файлов и папок
+        public FarManager() //конструктор
         {
-            cursor = 0;
+            cursor = 0; //курсор стоит на самой верхней строке               
         }
-
-        public FarManager(string path)
+        public void Show(DirectoryInfo di, int index) //создаем функцию
         {
-            this.path = path;
-            cursor = 0;
-            directory = new DirectoryInfo(path);
-            sz = directory.GetFileSystemInfos().Length;
-            ok = true;
-        }
-
-        public void Color(FileSystemInfo fs, int index)
-        {
-            if (cursor == index)
+            FileSystemInfo[] fi = di.GetFileSystemInfos(); //создаем массив, чтобы получить информацию обо всем, что находится внутри
+            for (int i = 0; i < fi.Length; i++) //пробегаемся по файлам
             {
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.ForegroundColor = ConsoleColor.Black;
-                currentFs = fs;
-            }
-            else if (fs.GetType() == typeof(DirectoryInfo))
-            {
-                Console.BackgroundColor = ConsoleColor.Green;
-                Console.ForegroundColor = ConsoleColor.Magenta;
-            }
-            else
-            {
-                Console.BackgroundColor = ConsoleColor.Blue;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-            }
-        }
-
-        public void Show()
-        {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.Clear();
-            directory = new DirectoryInfo(path);
-            FileSystemInfo[] fs = directory.GetFileSystemInfos();
-            for (int i = 0, k = 0; i < fs.Length; i++)
-            {
-                if (ok == false && fs[i].Name[0] == '.')
+                if (index == i) //даем цвет
                 {
-                    continue;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.BackgroundColor = ConsoleColor.Blue;
+                    Console.WriteLine(i + 1 + ". " + fi[i].Name);
                 }
-                Color(fs[i], k);
-                Console.WriteLine(fs[i].Name);
-                k++;
+                else if (fi[i].GetType() == typeof(FileInfo))
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.WriteLine(i + 1 + ". " + fi[i].Name);
+                }
+                else if (fi[i].GetType() == typeof(DirectoryInfo))
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.WriteLine(i + 1 + ". " + fi[i].Name);
+                }
             }
         }
-        public void Up()
+        public void Start(string path) //создаем функцию
         {
-            cursor--;
-            if (cursor < 0)
-                cursor = sz - 1;
-        }
-        public void Down()
-        {
-            cursor++;
-            if (cursor == sz)
-                cursor = 0;
-        }
-
-        public void CalcSz()
-        {
-            directory = new DirectoryInfo(path);
-            FileSystemInfo[] fs = directory.GetFileSystemInfos();
-            sz = fs.Length;
-            if (ok == false)
-                for (int i = 0; i < fs.Length; i++)
-                    if (fs[i].Name[0] == '.')
-                        sz--;
-        }
-
-        public void Start()
-        {
-            ConsoleKeyInfo consoleKey = Console.ReadKey();
-            while (consoleKey.Key != ConsoleKey.Escape)
+            ConsoleKeyInfo button = Console.ReadKey(); //считываем кнопку
+            while (button.Key != ConsoleKey.Escape)//будет работать, пока не нажмем esc
             {
-                CalcSz();
-                Show();
-                consoleKey = Console.ReadKey();
-                if (consoleKey.Key == ConsoleKey.UpArrow)
-                    Up();
-                if (consoleKey.Key == ConsoleKey.DownArrow)
-                    Down();
-                if (consoleKey.Key == ConsoleKey.RightArrow)
+                DirectoryInfo dir = new DirectoryInfo(path); //создаем dir, чтобы сохранить там путь папки
+                FileSystemInfo[] fsi = dir.GetFileSystemInfos();//создаем массив, чтобы получить инфо обо всем, что находится внутри
+                number = fsi.Length; //количество приравняем к длине массива
+                Show(dir, cursor); //вызываем метод
+                button = Console.ReadKey(); //кнопка, где будут храниться клавиши
+                Console.BackgroundColor = ConsoleColor.Black; //придаем черный фон
+                Console.Clear(); //очищаем
+                if (button.Key == ConsoleKey.UpArrow) //нажимаем клавишу вверх
                 {
-                    ok = false;
-                    cursor = 0;
+                    cursor--;
+                    if (cursor < 0)
+                        cursor = number - 1;
                 }
-                if (consoleKey.Key == ConsoleKey.LeftArrow)
+                if (button.Key == ConsoleKey.DownArrow) //нажимаем клавишу вниз
                 {
-                    cursor = 0;
-                    ok = true;
-                }
-                if (consoleKey.Key == ConsoleKey.Enter)
-                {
-                    if (currentFs.GetType() == typeof(DirectoryInfo))
-                    {
+                    cursor++;
+                    if (cursor == number)
                         cursor = 0;
-                        path = currentFs.FullName;
+                }
+                if (button.Key == ConsoleKey.F2) //нажимаем F2, чтобы переименовать файл 
+                {
+                    if (fsi[cursor].GetType() == typeof(FileInfo)) //если это файл
+                    {
+                        string s = Console.ReadLine();                                  //то вводим имя
+                        string ss = Path.Combine(dir.FullName, s);                      //соединяем имя с путем
+                        File.Move(fsi[cursor].FullName, ss);                            //меняем название
+                        Console.BackgroundColor = ConsoleColor.Black;                   //придаем черный фон, чтобы увидеть изменения
+                        Console.Clear();                                                //очищаем
+                    }
+                    if (fsi[cursor].GetType() == typeof(DirectoryInfo))                 //если это папка
+                    {
+                        string s = Console.ReadLine();                                  //то вводим имя
+                        string st = Path.Combine(dir.FullName, s);                      //соединяем имя с путем
+                        Directory.Move(fsi[cursor].FullName, st);                       //меняем название            
+                        Console.BackgroundColor = ConsoleColor.Black;                   //придаем черный фон, чтобы увидеть изменения
+                        Console.Clear();                                                //очищаем
                     }
                 }
-                if (consoleKey.Key == ConsoleKey.Backspace)
+                if (button.Key == ConsoleKey.Enter)                                     //нажимаем enter                                                  
                 {
-                    cursor = 0;
-                    path = directory.Parent.FullName;
+                    if (fsi[cursor].GetType() == typeof(FileInfo))                      //если это файл
+                    {
+                        StreamReader str = File.OpenText(fsi[cursor].FullName);         //открыть файл, где стоит курсор
+                        string s = str.ReadToEnd();                                     //прочитать строку в файле
+                        str.Close();                                                    //закрыть файл
+                        Console.WriteLine(s);                                           //вывести на экран
+                    }
+                    if (fsi[cursor].GetType() == typeof(DirectoryInfo)) //если это папка
+                    {
+                        path = fsi[cursor].FullName; //то он открывает папку, где стоит курсор
+                        cursor = 0;  //курсор стоит на самой верхней строке
+                    }
+                }
+                if (button.Key == ConsoleKey.Backspace) //нажимаем backspace
+                {
+                    cursor = 0;  //курсор стоит на самой верхней строке       
+                    dir = dir.Parent; //обращаемся к изначальной папке
+                    path = dir.FullName; //переходим туда
+                }
+                if (button.Key == ConsoleKey.Delete)//нажимаем delete
+                {
+                    if (fsi[cursor].GetType() == typeof(DirectoryInfo)) //если это папка
+                        Directory.Delete(fsi[cursor].FullName); //удаляем папку
+                    else        //если это файл
+                        File.Delete(fsi[cursor].FullName); //удаляем файл
                 }
             }
         }
-
     }
     class Program
     {
-        static void Main(string[] args) // содержимое файла
+        static void Main(string[] args)
         {
-            string path = @"C:\tempo";
-            FarManager farManager = new FarManager(path);
-            farManager.Start(); //(@"C:\tempo\");
-          
+            FarManager far = new FarManager();
+            far.Start(@"C:\tempo"); // путь к файлу
         }
     }
 }
